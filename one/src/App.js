@@ -6,43 +6,30 @@ import { signOut } from "firebase/auth";
 import { auth } from "./firebase";
 
 function App() {
-  // 👤 Logged-in user
-  const [user, setUser] = useState(null);
-
-  // 📄 Current page
+  const [currentUser, setCurrentUser] = useState(null);
   const [page, setPage] = useState("login");
 
+  const openLogin = () => setPage("login");
+  const openSignup = () => setPage("signup");
+
   const logout = async () => {
-    await signOut(auth);
-    setUser(null);
+    try {
+      await signOut(auth);
+      setCurrentUser(null);
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
   };
 
-  // 🎉 IF USER LOGGED IN → SHOW WELCOME
-  if (user) {
-    return <Welcome user={user} logout={logout} />;
+  if (currentUser) {
+    return <Welcome user={currentUser} logout={logout} />;
   }
 
-  // 🔐 LOGIN PAGE
-  if (page === "login") {
-    return (
-      <Login
-        setUser={setUser}
-        goSignup={() => setPage("signup")}
-      />
-    );
-  }
-
-  // 📝 SIGNUP PAGE
-  if (page === "signup") {
-    return (
-      <Signup
-        goLogin={() => setPage("login")}
-      />
-    );
-  }
-
-  // fallback (just in case)
-  return <h1>Loading...</h1>;
+  return page === "signup" ? (
+    <Signup goLogin={openLogin} />
+  ) : (
+    <Login setUser={setCurrentUser} goSignup={openSignup} />
+  );
 }
 
 export default App;

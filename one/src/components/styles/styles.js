@@ -39,7 +39,8 @@ const styles = {
   },
 
   wave: {
-    animation: 'wave 2s infinite',
+    display: "inline-block",
+    animation: "wave 1.5s ease-in-out infinite",
   },
 
   form: {
@@ -64,10 +65,33 @@ const styles = {
     cursor: "pointer",
   },
 
+  logoutButton: {
+    marginTop: "20px",
+    fontSize: "1.05em",
+    padding: "12px 18px",
+    borderRadius: "8px",
+    border: "none",
+    background: "#f35454",
+    color: "#fff",
+    cursor: "pointer",
+  },
+
   link: {
     marginTop: "15px",
     color: "#667eea",
     cursor: "pointer",
+  },
+
+  error: {
+    color: "#c53030",
+    fontSize: "0.85rem",
+    margin: "2px 0",
+  },
+
+  success: {
+    color: "#2d7b2f",
+    fontSize: "0.9rem",
+    margin: "2px 0",
   },
 
   popupOverlay: {

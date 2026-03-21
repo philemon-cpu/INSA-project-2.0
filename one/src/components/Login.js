@@ -1,50 +1,55 @@
 import React, { useState } from "react";
 import { auth, db } from "../firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { collection, getDocs, doc, getDoc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import styles from "./styles/styles";
 
+const initialLoginState = {
+  email: "",
+  password: "",
+};
+
 function Login({ setUser, goSignup }) {
-  const [login, setLogin] = useState({
-    identifier: "",
-    password: "",
-  });
+  const [form, setForm] = useState(initialLoginState);
   const [errors, setErrors] = useState({});
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setErrors({});
+  const validate = () => {
+    const newErrors = {};
 
-    let newErrors = {};
-    if (!login.identifier.trim()) newErrors.identifier = 'Email is required';
-    if (!login.password) newErrors.password = 'Password is required';
+    if (!form.email.trim()) newErrors.email = "Email is required.";
+    if (!form.password) newErrors.password = "Password is required.";
 
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+    return newErrors;
+  };
+
+  const handleChange = (field) => (event) => {
+    setForm((prev) => ({ ...prev, [field]: event.target.value }));
+  };
+
+  const handleLogin = async (event) => {
+    event.preventDefault();
+
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
       return;
     }
 
     try {
-      await signInWithEmailAndPassword(
-        auth,
-        login.identifier,
-        login.password
-      );
+      await signInWithEmailAndPassword(auth, form.email, form.password);
 
-      // Get user data from Firestore
-      const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
-      if (userDoc.exists()) {
-        setUser(userDoc.data());
+      const userSnapshot = await getDoc(doc(db, "users", auth.currentUser.uid));
+      if (userSnapshot.exists()) {
+        setUser(userSnapshot.data());
       } else {
-        // If no Firestore data, use basic info from Auth
         setUser({
-          email: auth.currentUser.email,
           uid: auth.currentUser.uid,
-          fullName: auth.currentUser.displayName || auth.currentUser.email.split('@')[0],
+          email: auth.currentUser.email,
+          fullName: auth.currentUser.displayName || auth.currentUser.email.split("@")[0],
         });
       }
     } catch (error) {
-      setErrors({general: "Login failed: " + error.message});
+      setErrors({ general: "Login failed: " + error.message });
     }
   };
 
@@ -52,31 +57,30 @@ function Login({ setUser, goSignup }) {
     <div style={styles.center}>
       <div style={styles.card}>
         <h2>Login</h2>
-        <p style={{color:'red', fontSize:'12px'}}>{errors.general}</p>
+        {errors.general && <p style={styles.error}>{errors.general}</p>}
 
         <form style={styles.form} onSubmit={handleLogin}>
           <input
             style={styles.input}
+            type="email"
             placeholder="Email"
-            value={login.identifier}
-            onChange={(e) =>
-              setLogin({ ...login, identifier: e.target.value })
-            }
+            value={form.email}
+            onChange={handleChange("email")}
           />
-          <p style={{color:'red', fontSize:'12px'}}>{errors.identifier}</p>
+          {errors.email && <p style={styles.error}>{errors.email}</p>}
 
           <input
             style={styles.input}
             type="password"
             placeholder="Password"
-            value={login.password}
-            onChange={(e) =>
-              setLogin({ ...login, password: e.target.value })
-            }
+            value={form.password}
+            onChange={handleChange("password")}
           />
-          <p style={{color:'red', fontSize:'12px'}}>{errors.password}</p>
+          {errors.password && <p style={styles.error}>{errors.password}</p>}
 
-          <button style={styles.button}>Login</button>
+          <button style={styles.button} type="submit">
+            Login
+          </button>
         </form>
 
         <p style={styles.link} onClick={goSignup}>
