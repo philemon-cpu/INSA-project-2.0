@@ -58,3 +58,13 @@ npm start
 cd client
 npm install
 npm start
+
+## Screenshots
+
+### Login Page
+![Login Page](./screenshots/login.png)<img width="1181" height="833" alt="image" src="https://github.com/user-attachments/assets/7c09ccfb-a409-4301-93a8-22e3419b5332" />
+
+
+### Signup Page
+![Signup Page](./screenshots/signup.png)<img width="1731" height="853" alt="image" src="https://github.com/user-attachments/assets/d0d04c54-91cc-4746-afbd-a150e944be7c" />
+
