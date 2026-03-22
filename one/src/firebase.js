@@ -1,10 +1,10 @@
 // Import Firebase core
 import { initializeApp } from "firebase/app";
 
-// 🔐 Auth
+//  Auth
 import { getAuth } from "firebase/auth";
 
-// 🗄️ Firestore (database)
+//  Firestore (database)
 import { getFirestore } from "firebase/firestore";
 
 // Your config
@@ -21,6 +21,6 @@ const firebaseConfig = {
 // Initialize app
 const app = initializeApp(firebaseConfig);
 
-// ✅ EXPORT THESE (VERY IMPORTANT)
+//  EXPORT THESE (VERY IMPORTANT)
 export const auth = getAuth(app);
 export const db = getFirestore(app);
