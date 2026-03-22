@@ -4,43 +4,42 @@ const styles = {
     justifyContent: "center",
     alignItems: "center",
     minHeight: "100vh",
-    padding: "100px 0",
-    background: "linear-gradient(135deg, #667eea, #764ba2)",
+    padding: "40px 15px",
+    background: "#0f0f0f",
   },
 
   card: {
-    background: "#fff",
+    background: "#1a1a1a",
     padding: "30px",
     borderRadius: "15px",
-    width: "340px",
+    width: "90%",
+    maxWidth: "420px", // ✅ wider + responsive
     textAlign: "center",
-    boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
+    boxShadow: "0 0 25px rgba(0,0,0,0.6)",
+    border: "1px solid #2a2a2a",
   },
 
   welcome: {
-    background: "#fff",
+    background: "#1a1a1a",
     padding: "50px",
     borderRadius: "15px",
-    width: "400px",
+    width: "90%",
+    maxWidth: "480px", // ✅ wider
     textAlign: "center",
-    boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
+    boxShadow: "0 0 25px rgba(0,0,0,0.6)",
+    border: "1px solid #2a2a2a",
   },
 
   welcomeTitle: {
     fontSize: "2.5em",
-    color: "#667eea",
+    color: "#00bcd4",
     marginBottom: "20px",
   },
 
   welcomeText: {
     fontSize: "1.2em",
-    color: "#333",
+    color: "#ccc",
     marginBottom: "10px",
-  },
-
-  wave: {
-    display: "inline-block",
-    animation: "wave 1.5s ease-in-out infinite",
   },
 
   form: {
@@ -52,7 +51,11 @@ const styles = {
     padding: "12px",
     margin: "8px 0",
     borderRadius: "8px",
-    border: "1px solid #ccc",
+    border: "1px solid #333",
+    background: "#0f0f0f",
+    color: "#fff",
+    outline: "none",
+    fontSize: "14px",
   },
 
   button: {
@@ -60,9 +63,11 @@ const styles = {
     marginTop: "10px",
     border: "none",
     borderRadius: "8px",
-    background: "#667eea",
-    color: "#fff",
+    background: "#00bcd4",
+    color: "#000",
+    fontWeight: "bold",
     cursor: "pointer",
+    fontSize: "15px",
   },
 
   logoutButton: {
@@ -71,27 +76,29 @@ const styles = {
     padding: "12px 18px",
     borderRadius: "8px",
     border: "none",
-    background: "#f35454",
+    background: "#ff4d4d",
     color: "#fff",
     cursor: "pointer",
   },
 
   link: {
     marginTop: "15px",
-    color: "#667eea",
+    color: "#00bcd4",
     cursor: "pointer",
+    fontSize: "14px",
   },
 
   error: {
-    color: "#c53030",
+    color: "#ff6b6b",
     fontSize: "0.85rem",
-    margin: "2px 0",
+    margin: "4px 0",
+    textAlign: "left",
   },
 
   success: {
-    color: "#2d7b2f",
+    color: "#4caf50",
     fontSize: "0.9rem",
-    margin: "2px 0",
+    margin: "4px 0",
   },
 
   popupOverlay: {
@@ -100,16 +107,20 @@ const styles = {
     left: 0,
     width: "100%",
     height: "100%",
-    background: "rgba(0,0,0,0.5)",
+    background: "rgba(0,0,0,0.7)",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
   },
 
   popupBox: {
-    background: "#fff",
+    background: "#1a1a1a",
     padding: "25px",
     borderRadius: "12px",
+    border: "1px solid #333",
+    width: "90%",
+    maxWidth: "350px",
+    textAlign: "center",
   },
 
   wave: {
