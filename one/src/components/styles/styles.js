@@ -5,7 +5,7 @@ const styles = {
     justifyContent: "center",
     alignItems: "center",
     minHeight: "100vh",
-    backgroundColor: "#0f0f0f",
+    backgroundColor: "#ffffff",
   },
 
   // Center without background

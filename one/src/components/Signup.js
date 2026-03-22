@@ -189,32 +189,6 @@ function Signup({ goLogin }) {
 
         <p style={styles.link} onClick={goLogin}>Already have an account?</p>
       </div>
-
-      <button 
-        style={{ 
-          marginTop: '20px',
-          padding: '10px 20px',
-          backgroundColor: '#4285F4',
-          color: 'white',
-          border: 'none',
-          borderRadius: '4px',
-          cursor: 'pointer',
-          fontSize: '13px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '6px',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-        }} 
-        onClick={handleGoogleSignup}
-      >
-        <img 
-          src="https://developers.google.com/identity/images/g-logo.png" 
-          alt="Google" 
-          style={{ width: '16px', height: '16px' }}
-        />
-        Continue with Google
-      </button>
     </div>
   );
 }

@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { auth, db } from "../firebase";
-import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import {
+  signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+} from "firebase/auth";
 import { ref, get, set } from "firebase/database";
 import styles from "./styles/styles";
 
@@ -14,22 +18,31 @@ function Login({ setUser, goSignup }) {
   const [errors, setErrors] = useState({});
   const [disabled, setDisabled] = useState(false);
   const [failedAttempts, setFailedAttempts] = useState(0);
+  const [loadingGoogle, setLoadingGoogle] = useState(false); 
 
+  // Validate
   const validate = () => {
     const newErrors = {};
 
-    if (!form.identifier.trim()) newErrors.identifier = "Email, Username, or Phone is required.";
-    if (!form.password) newErrors.password = "Password is required.";
+    if (!form.identifier.trim()) {
+      newErrors.identifier = "Email, Username, or Phone is required";
+    }
+
+    if (!form.password) {
+      newErrors.password = "Password is required";
+    }
 
     return newErrors;
   };
 
-  const handleChange = (field) => (event) => {
-    setForm((prev) => ({ ...prev, [field]: event.target.value }));
+  // Handle input
+  const handleChange = (field) => (e) => {
+    setForm({ ...form, [field]: e.target.value });
   };
 
-  const handleLogin = async (event) => {
-    event.preventDefault();
+  // Login
+  const handleLogin = async (e) => {
+    e.preventDefault();
 
     if (disabled) return;
 
@@ -40,119 +53,121 @@ function Login({ setUser, goSignup }) {
     }
 
     setDisabled(true);
-    setTimeout(() => setDisabled(false), 10000); // 10 second cooldown
+    setTimeout(() => setDisabled(false), 10000);
 
     try {
       let email = form.identifier;
 
-      if (form.identifier.includes("@")) {
-        // identifier is email
-      } else if (/^\+?\d+$/.test(form.identifier.replace(/\s/g, ""))) {
-        // identifier is phone
-        const phoneRef = ref(db, "phones/" + form.identifier.replace(/\s/g, ""));
-        const phoneSnapshot = await get(phoneRef);
-        if (!phoneSnapshot.exists()) {
-          throw new Error("Phone not found");
+      if (!form.identifier.includes("@")) {
+        if (/^\+?\d+$/.test(form.identifier.replace(/\s/g, ""))) {
+          const phoneRef = ref(
+            db,
+            "phones/" + form.identifier.replace(/\s/g, "")
+          );
+          const phoneSnap = await get(phoneRef);
+          if (!phoneSnap.exists()) throw new Error("Phone not found");
+
+          const uid = phoneSnap.val();
+          const userSnap = await get(ref(db, "users/" + uid));
+          email = userSnap.val().email;
+        } else {
+          const userRef = ref(db, "usernames/" + form.identifier);
+          const userSnap = await get(userRef);
+          if (!userSnap.exists()) throw new Error("Username not found");
+
+          const uid = userSnap.val();
+          const dataSnap = await get(ref(db, "users/" + uid));
+          email = dataSnap.val().email;
         }
-        const uid = phoneSnapshot.val();
-        const userSnapshot = await get(ref(db, "users/" + uid));
-        if (!userSnapshot.exists()) {
-          throw new Error("User data not found");
-        }
-        email = userSnapshot.val().email;
-      } else {
-        // identifier is username
-        const usernameRef = ref(db, "usernames/" + form.identifier);
-        const usernameSnapshot = await get(usernameRef);
-        if (!usernameSnapshot.exists()) {
-          throw new Error("Username not found");
-        }
-        const uid = usernameSnapshot.val();
-        const userSnapshot = await get(ref(db, "users/" + uid));
-        if (!userSnapshot.exists()) {
-          throw new Error("User data not found");
-        }
-        email = userSnapshot.val().email;
       }
 
       await signInWithEmailAndPassword(auth, email, form.password);
 
       if (!auth.currentUser.emailVerified) {
-        setErrors({ general: "Please verify your email before logging in." });
+        setErrors({ general: "Please verify your email first" });
         return;
       }
 
-      const loggedInUser = await get(ref(db, "users/" + auth.currentUser.uid));
-      if (loggedInUser.exists()) {
-        setUser(loggedInUser.val());
+      const userData = await get(ref(db, "users/" + auth.currentUser.uid));
+
+      if (userData.exists()) {
+        setUser(userData.val());
       } else {
         setUser({
           uid: auth.currentUser.uid,
           email: auth.currentUser.email,
-          fullName: auth.currentUser.displayName || auth.currentUser.email.split("@")[0],
+          fullName: auth.currentUser.email.split("@")[0],
         });
       }
 
-      setFailedAttempts(0); // reset on success
-    } catch (error) {
+      setFailedAttempts(0);
+    } catch (err) {
       setFailedAttempts((prev) => prev + 1);
+
       if (failedAttempts + 1 >= 5) {
         setDisabled(true);
         setTimeout(() => {
           setDisabled(false);
           setFailedAttempts(0);
-        }, 300000); // 5 minutes lock
-        setErrors({ general: "Too many failed attempts. Try again in 5 minutes." });
+        }, 300000);
+
+        setErrors({
+          general: "Too many attempts. Try again in 5 minutes.",
+        });
       } else {
-        setErrors({ general: error.code === "auth/wrong-password" ? "Invalid password." : error.code === "auth/user-not-found" ? "User not found." : error.message });
+        setErrors({
+          general:
+            err.code === "auth/wrong-password"
+              ? "Wrong password"
+              : err.code === "auth/user-not-found"
+              ? "User not found"
+              : err.message,
+        });
       }
     }
   };
 
+  // Google login (FIXED)
   const handleGoogleLogin = async () => {
+    setLoadingGoogle(true);
+    setErrors({});
+
     try {
       const provider = new GoogleAuthProvider();
-      const { user } = await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
 
-      // Sync user into Realtime DB if not exist
-      const userRef = ref(db, 'users/' + user.uid);
-      const userSnapshot = await get(userRef);
-      if (!userSnapshot.exists()) {
+      const userRef = ref(db, "users/" + user.uid);
+      const snapshot = await get(userRef);
+
+      if (!snapshot.exists()) {
         await set(userRef, {
           uid: user.uid,
-          fullName: user.displayName || '',
-          username: user.email ? user.email.split('@')[0] : '',
-          phone: user.phoneNumber || '',
+          fullName: user.displayName || "",
+          username: user.email ? user.email.split("@")[0] : "",
+          phone: user.phoneNumber || "",
           email: user.email,
-          location: '',
-          birthdate: '',
+          location: "",
+          birthdate: "",
         });
-
-        if (user.displayName) {
-          await set(ref(db, 'usernames/' + (user.displayName.replace(/\s+/g, '').toLowerCase())), user.uid);
-        }
-        if (user.phoneNumber) {
-          await set(ref(db, 'phones/' + user.phoneNumber.replace(/\s/g, '')), user.uid);
-        }
       }
 
-      const authenticatedUser = await get(ref(db, 'users/' + user.uid));
-      if (authenticatedUser.exists()) {
-        setUser(authenticatedUser.val());
-      } else {
-        setUser({ uid: user.uid, email: user.email, fullName: user.displayName || user.email.split('@')[0] });
-      }
+      const finalUser = await get(userRef);
+      setUser(finalUser.val());
 
       setFailedAttempts(0);
-    } catch (error) {
-      setErrors({ general: error.message });
+    } catch (err) {
+      setErrors({ general: err.message });
     }
+
+    setLoadingGoogle(false);
   };
 
   return (
-    <div style={styles.center}>
+    <div style={styles.container}>
       <div style={styles.card}>
-        <h2>Login</h2>
+        <h2 style={styles.title}>Login</h2>
+
         {errors.general && <p style={styles.error}>{errors.general}</p>}
 
         <form style={styles.form} onSubmit={handleLogin}>
@@ -163,7 +178,9 @@ function Login({ setUser, goSignup }) {
             value={form.identifier}
             onChange={handleChange("identifier")}
           />
-          {errors.identifier && <p style={styles.error}>{errors.identifier}</p>}
+          {errors.identifier && (
+            <p style={styles.error}>{errors.identifier}</p>
+          )}
 
           <input
             style={styles.input}
@@ -172,43 +189,50 @@ function Login({ setUser, goSignup }) {
             value={form.password}
             onChange={handleChange("password")}
           />
-          {errors.password && <p style={styles.error}>{errors.password}</p>}
+          {errors.password && (
+            <p style={styles.error}>{errors.password}</p>
+          )}
 
-          <button style={styles.button} type="submit" disabled={disabled}>
+          <button style={styles.button} disabled={disabled}>
             {disabled ? "Please wait..." : "Login"}
           </button>
         </form>
+
+        {/* Divider */}
+        <p style={{ margin: "15px 0", color: "#999" }}>or</p>
+
+        {/* Google Button */}
+        <button
+          type="button"
+          onClick={handleGoogleLogin}
+          disabled={loadingGoogle}
+          style={{
+            width: "100%",
+            padding: "12px",
+            background: "#fff",
+            border: "1px solid #ddd",
+            borderRadius: "8px",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "10px",
+            fontSize: "14px",
+            fontWeight: "500",
+          }}
+        >
+          <img
+            src="https://www.svgrepo.com/show/475656/google-color.svg"
+            alt="google"
+            style={{ width: "18px", height: "18px" }}
+          />
+          {loadingGoogle ? "Signing in..." : "Continue with Google"}
+        </button>
 
         <p style={styles.link} onClick={goSignup}>
           Create account
         </p>
       </div>
-
-      <button 
-        style={{ 
-          marginTop: '20px',
-          padding: '12px 24px',
-          backgroundColor: '#4285F4',
-          color: 'white',
-          border: 'none',
-          borderRadius: '4px',
-          cursor: 'pointer',
-          fontSize: '14px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '8px',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-        }} 
-        onClick={handleGoogleLogin}
-      >
-        <img 
-          src="https://developers.google.com/identity/images/g-logo.png" 
-          alt="Google" 
-          style={{ width: '18px', height: '18px' }}
-        />
-        Continue with Google
-      </button>
     </div>
   );
 }
