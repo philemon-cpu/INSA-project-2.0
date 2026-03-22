@@ -3,6 +3,7 @@ import { auth, db } from "../firebase";
 // eslint-disable-next-line
 import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import { collection, addDoc, query, where, getDocs, doc, setDoc } from "firebase/firestore";
+import { ref, set, get } from "firebase/database";
 import styles from "./styles/styles";
 
 const initialForm = {
@@ -62,16 +63,16 @@ function Signup({ goLogin }) {
 
     try {
       // Check if username is already taken
-      const q = query(collection(db, "users"), where("username", "==", form.username));
-      const querySnapshot = await getDocs(q);
-      if (!querySnapshot.empty) {
+      const usernameRef = ref(db, 'usernames/' + form.username);
+      const usernameSnapshot = await get(usernameRef);
+      if (usernameSnapshot.exists()) {
         setErrors({ general: "Username already taken." });
         return;
       }
 
       const created = await createUserWithEmailAndPassword(auth, form.email, form.password);
 
-      await setDoc(doc(db, "users", created.user.uid), {
+      await set(ref(db, 'users/' + created.user.uid), {
         uid: created.user.uid,
         fullName: form.fullName,
         username: form.username,
@@ -80,6 +81,12 @@ function Signup({ goLogin }) {
         location: form.location,
         birthdate: form.birthdate,
       });
+
+      // Save username and phone indexes
+      await set(ref(db, 'usernames/' + form.username), created.user.uid);
+      await set(ref(db, 'phones/' + form.phone.replace(/\s/g, '')), created.user.uid);
+
+      await sendEmailVerification(created.user);
 
       await sendEmailVerification(created.user);
 
