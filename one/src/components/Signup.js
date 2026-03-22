@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { auth, db } from "../firebase";
+// eslint-disable-next-line
 import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
-import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
+import { collection, addDoc, query, where, getDocs, doc, setDoc } from "firebase/firestore";
 import styles from "./styles/styles";
 
 const initialForm = {
@@ -18,6 +19,8 @@ function Signup({ goLogin }) {
   const [form, setForm] = useState(initialForm);
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState("");
+  const [disabled, setDisabled] = useState(false);
+  const [failedAttempts, setFailedAttempts] = useState(0);
 
   const validate = () => {
     const newErrors = {};
@@ -46,11 +49,16 @@ function Signup({ goLogin }) {
   const handleSignup = async (event) => {
     event.preventDefault();
 
+    if (disabled) return;
+
     const validationErrors = validate();
     if (Object.keys(validationErrors).length) {
       setErrors(validationErrors);
       return;
     }
+
+    setDisabled(true);
+    setTimeout(() => setDisabled(false), 10000); // 10 second cooldown
 
     try {
       // Check if username is already taken
@@ -63,7 +71,7 @@ function Signup({ goLogin }) {
 
       const created = await createUserWithEmailAndPassword(auth, form.email, form.password);
 
-      await addDoc(collection(db, "users"), {
+      await setDoc(doc(db, "users", created.user.uid), {
         uid: created.user.uid,
         fullName: form.fullName,
         username: form.username,
@@ -81,13 +89,24 @@ function Signup({ goLogin }) {
         uid: created.user.uid,
         email: created.user.email,
       });
+      setFailedAttempts(0); // reset on success
 
       setTimeout(() => {
         setMessage("");
         goLogin();
       }, 1500);
     } catch (error) {
-      setErrors({ general: error.code === "auth/email-already-in-use" ? "Email already exists." : error.message });
+      setFailedAttempts(prev => prev + 1);
+      if (failedAttempts + 1 >= 5) {
+        setDisabled(true);
+        setTimeout(() => {
+          setDisabled(false);
+          setFailedAttempts(0);
+        }, 300000); // 5 minutes lock
+        setErrors({ general: "Too many failed attempts. Try again in 5 minutes." });
+      } else {
+        setErrors({ general: error.code === "auth/email-already-in-use" ? "Email already exists." : error.message });
+      }
     }
   };
 
@@ -120,7 +139,9 @@ function Signup({ goLogin }) {
           <input style={styles.input} type="password" placeholder="Password" value={form.password} onChange={updateField("password")} />
           {errors.password && <p style={styles.error}>{errors.password}</p>}
 
-          <button style={styles.button} type="submit">Signup</button>
+          <button style={styles.button} type="submit" disabled={disabled}>
+            {disabled ? "Please wait..." : "Signup"}
+          </button>
         </form>
 
         <p style={styles.link} onClick={goLogin}>Already have an account?</p>
@@ -129,4 +150,4 @@ function Signup({ goLogin }) {
   );
 }
 
-export default Signup;
+export default Signup

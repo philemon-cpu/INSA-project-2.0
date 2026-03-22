@@ -8,6 +8,14 @@ const styles = {
     backgroundColor: "#0f0f0f",
   },
 
+  // Center without background
+  center: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100vh",
+  },
+
   // White card
   card: {
     backgroundColor: "#ffffff",
@@ -54,6 +62,13 @@ const styles = {
     color: "#00bcd4",
     cursor: "pointer",
     fontSize: "14px",
+  },
+
+  // Form
+  form: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
   },
 
   // Error message

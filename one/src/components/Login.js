@@ -12,6 +12,8 @@ const initialLoginState = {
 function Login({ setUser, goSignup }) {
   const [form, setForm] = useState(initialLoginState);
   const [errors, setErrors] = useState({});
+  const [disabled, setDisabled] = useState(false);
+  const [failedAttempts, setFailedAttempts] = useState(0);
 
   const validate = () => {
     const newErrors = {};
@@ -29,11 +31,16 @@ function Login({ setUser, goSignup }) {
   const handleLogin = async (event) => {
     event.preventDefault();
 
+    if (disabled) return;
+
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
+
+    setDisabled(true);
+    setTimeout(() => setDisabled(false), 10000); // 10 second cooldown
 
     try {
       await signInWithEmailAndPassword(auth, form.email, form.password);
@@ -53,13 +60,19 @@ function Login({ setUser, goSignup }) {
           fullName: auth.currentUser.displayName || auth.currentUser.email.split("@")[0],
         });
       }
-
-      console.log("Login successful:", {
-        uid: auth.currentUser.uid,
-        email: auth.currentUser.email,
-      });
+      setFailedAttempts(0); // reset on success
     } catch (error) {
-      setErrors({ general: "Login failed: " + error.message });
+      setFailedAttempts(prev => prev + 1);
+      if (failedAttempts + 1 >= 5) {
+        setDisabled(true);
+        setTimeout(() => {
+          setDisabled(false);
+          setFailedAttempts(0);
+        }, 300000); // 5 minutes lock
+        setErrors({ general: "Too many failed attempts. Try again in 5 minutes." });
+      } else {
+        setErrors({ general: error.code === "auth/wrong-password" ? "Invalid password." : error.code === "auth/user-not-found" ? "User not found." : error.message });
+      }
     }
   };
 
@@ -88,8 +101,8 @@ function Login({ setUser, goSignup }) {
           />
           {errors.password && <p style={styles.error}>{errors.password}</p>}
 
-          <button style={styles.button} type="submit">
-            Login
+          <button style={styles.button} type="submit" disabled={disabled}>
+            {disabled ? "Please wait..." : "Login"}
           </button>
         </form>
 
