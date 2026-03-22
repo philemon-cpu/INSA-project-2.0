@@ -1,33 +1,60 @@
-Authentication App
+# Authentication App
 
-This is a simple login and signup app built using React, Node.js, Express, and Firebase.
+A simple login and signup application built using React, Node.js, Express, and Firebase.
 
-Tech Stack
-Frontend: React
-Backend: Node.js, Express
-Authentication & Database: Firebase
-Features
-User signup
-User login
-Password validation (strong password rules)
-Firebase authentication
-User data stored in database
-API keys hidden using .env
-Security
-Environment variables are used to protect API keys
-Firebase provides secure authentication
-Basic input validation is implemented
-Application Flow
-User opens the app and sees the login page
-User can sign up if they don’t have an account
-After signup, the user is redirected to the login page
-After login, the user is welcomed (e.g., “Hi username”)
-Getting Started
-Install dependencies
+---
+
+## Tech Stack
+
+**Frontend**
+- React  
+
+**Backend**
+- Node.js  
+- Express  
+
+**Authentication & Database**
+- Firebase  
+
+---
+
+## Features
+
+- User signup  
+- User login  
+- Strong password validation  
+- Firebase authentication  
+- User data stored in database  
+- API keys secured using `.env`  
+
+---
+
+## Security
+
+- Environment variables are used to hide sensitive data  
+- Firebase handles authentication securely  
+- Basic input validation is implemented  
+
+---
+
+## Application Flow
+
+1. User opens the app and sees the login page  
+2. User signs up if they don’t have an account  
+3. After signup, user is redirected to login  
+4. After login, user sees a welcome message (e.g. "Hi username")  
+
+---
+
+## Getting Started
+
+### 1. Install dependencies
+
+```bash
 npm install
-Run backend
+2. Run backend
 npm start
-Run frontend
+3. Run frontend
 cd client
 npm install
 npm start
