@@ -1,86 +1,54 @@
 const styles = {
-  center: {
+  // Page background (dark)
+  container: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     minHeight: "100vh",
-    padding: "40px 15px",
-    background: "#0f0f0f",
+    backgroundColor: "#0f0f0f",
   },
 
+  // White card
   card: {
-    background: "#1a1a1a",
+    backgroundColor: "#ffffff",
     padding: "30px",
-    borderRadius: "15px",
+    borderRadius: "12px",
     width: "90%",
-    maxWidth: "420px", // ✅ wider + responsive
+    maxWidth: "420px",
+    boxShadow: "0 10px 25px rgba(0,0,0,0.3)",
     textAlign: "center",
-    boxShadow: "0 0 25px rgba(0,0,0,0.6)",
-    border: "1px solid #2a2a2a",
   },
 
-  welcome: {
-    background: "#1a1a1a",
-    padding: "50px",
-    borderRadius: "15px",
-    width: "90%",
-    maxWidth: "480px", // ✅ wider
-    textAlign: "center",
-    boxShadow: "0 0 25px rgba(0,0,0,0.6)",
-    border: "1px solid #2a2a2a",
-  },
-
-  welcomeTitle: {
-    fontSize: "2.5em",
-    color: "#00bcd4",
+  // Title
+  title: {
     marginBottom: "20px",
+    color: "#333",
   },
 
-  welcomeText: {
-    fontSize: "1.2em",
-    color: "#ccc",
-    marginBottom: "10px",
-  },
-
-  form: {
-    display: "flex",
-    flexDirection: "column",
-  },
-
+  // Input fields
   input: {
+    width: "100%",
     padding: "12px",
     margin: "8px 0",
     borderRadius: "8px",
-    border: "1px solid #333",
-    background: "#0f0f0f",
-    color: "#fff",
-    outline: "none",
+    border: "1px solid #ccc",
     fontSize: "14px",
   },
 
+  // Button
   button: {
+    width: "100%",
     padding: "12px",
     marginTop: "10px",
     border: "none",
     borderRadius: "8px",
-    background: "#00bcd4",
-    color: "#000",
+    backgroundColor: "#00bcd4",
+    color: "#fff",
     fontWeight: "bold",
     cursor: "pointer",
-    fontSize: "15px",
   },
 
-  logoutButton: {
-    marginTop: "20px",
-    fontSize: "1.05em",
-    padding: "12px 18px",
-    borderRadius: "8px",
-    border: "none",
-    background: "#ff4d4d",
-    color: "#fff",
-    cursor: "pointer",
-  },
-
+  // Link text
   link: {
     marginTop: "15px",
     color: "#00bcd4",
@@ -88,44 +56,17 @@ const styles = {
     fontSize: "14px",
   },
 
+  // Error message
   error: {
-    color: "#ff6b6b",
-    fontSize: "0.85rem",
-    margin: "4px 0",
+    color: "red",
+    fontSize: "13px",
     textAlign: "left",
   },
 
+  // Success message
   success: {
-    color: "#4caf50",
-    fontSize: "0.9rem",
-    margin: "4px 0",
-  },
-
-  popupOverlay: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    background: "rgba(0,0,0,0.7)",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  popupBox: {
-    background: "#1a1a1a",
-    padding: "25px",
-    borderRadius: "12px",
-    border: "1px solid #333",
-    width: "90%",
-    maxWidth: "350px",
-    textAlign: "center",
-  },
-
-  wave: {
-    display: "inline-block",
-    animation: "wave 1s infinite",
+    color: "green",
+    fontSize: "13px",
   },
 };
 

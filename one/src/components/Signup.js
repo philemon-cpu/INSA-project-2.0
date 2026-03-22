@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { auth, db } from "../firebase";
 import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
 import styles from "./styles/styles";
 
 const initialForm = {
@@ -53,6 +53,14 @@ function Signup({ goLogin }) {
     }
 
     try {
+      // Check if username is already taken
+      const q = query(collection(db, "users"), where("username", "==", form.username));
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        setErrors({ general: "Username already taken." });
+        return;
+      }
+
       const created = await createUserWithEmailAndPassword(auth, form.email, form.password);
 
       await addDoc(collection(db, "users"), {
