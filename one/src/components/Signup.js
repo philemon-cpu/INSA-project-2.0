@@ -67,6 +67,10 @@ function Signup({ goLogin }) {
 
       setMessage("Account created. Please login.");
       setForm(initialForm);
+      console.log("Sign up successful:", {
+        uid: created.user.uid,
+        email: created.user.email,
+      });
 
       setTimeout(() => {
         setMessage("");

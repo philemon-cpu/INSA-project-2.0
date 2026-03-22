@@ -48,6 +48,11 @@ function Login({ setUser, goSignup }) {
           fullName: auth.currentUser.displayName || auth.currentUser.email.split("@")[0],
         });
       }
+
+      console.log("Login successful:", {
+        uid: auth.currentUser.uid,
+        email: auth.currentUser.email,
+      });
     } catch (error) {
       setErrors({ general: "Login failed: " + error.message });
     }
