@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { auth, db } from "../firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import { collection, addDoc } from "firebase/firestore";
 import styles from "./styles/styles";
 
@@ -65,7 +65,9 @@ function Signup({ goLogin }) {
         birthdate: form.birthdate,
       });
 
-      setMessage("Account created. Please login.");
+      await sendEmailVerification(created.user);
+
+      setMessage("Account created. Please check your email and verify before logging in.");
       setForm(initialForm);
       console.log("Sign up successful:", {
         uid: created.user.uid,

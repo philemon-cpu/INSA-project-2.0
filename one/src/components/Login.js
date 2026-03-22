@@ -38,6 +38,11 @@ function Login({ setUser, goSignup }) {
     try {
       await signInWithEmailAndPassword(auth, form.email, form.password);
 
+      if (!auth.currentUser.emailVerified) {
+        setErrors({ general: "Please verify your email before logging in." });
+        return;
+      }
+
       const userSnapshot = await getDoc(doc(db, "users", auth.currentUser.uid));
       if (userSnapshot.exists()) {
         setUser(userSnapshot.data());
