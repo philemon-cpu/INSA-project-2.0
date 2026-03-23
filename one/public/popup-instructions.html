@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enable Popups for Google Sign-In</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .browser-section {
+            margin: 20px 0;
+            padding: 15px;
+            border-left: 4px solid #4285f4;
+            background-color: #f8f9fa;
+        }
+        .step {
+            margin: 10px 0;
+        }
+        code {
+            background-color: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        .icon {
+            font-size: 20px;
+            margin-right: 10px;
+        }
+        .back-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4285f4;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔓 Enable Popups for Google Sign-In</h1>
+        
+        <p><strong>To use Google Sign-In, you need to allow popups for this website.</strong> This is a security feature in modern browsers that you can easily configure.</p>
+
+        <div class="browser-section">
+            <h3><span class="icon">🌐</span>Chrome/Edge:</h3>
+            <div class="step">1. Look for the <strong>popup blocker icon</strong> (🚫) in the address bar</div>
+            <div class="step">2. Click the icon and select <code>"Always allow popups from this site"</code></div>
+            <div class="step">3. Refresh the page and try Google Sign-In again</div>
+        </div>
+
+        <div class="browser-section">
+            <h3><span class="icon">🦊</span>Firefox:</h3>
+            <div class="step">1. Click the <strong>popup blocker icon</strong> in the address bar</div>
+            <div class="step">2. Select <code>"Allow popups for this site"</code></div>
+            <div class="step">3. Refresh the page and try Google Sign-In again</div>
+        </div>
+
+        <div class="browser-section">
+            <h3><span class="icon">🧭</span>Safari:</h3>
+            <div class="step">1. Go to <strong>Safari > Preferences > Websites</strong></div>
+            <div class="step">2. Select <code>"Pop-up Windows"</code> from the left menu</div>
+            <div class="step">3. Find this website and set it to <code>"Allow"</code></div>
+            <div class="step">4. Refresh the page and try Google Sign-In again</div>
+        </div>
+
+        <div class="browser-section">
+            <h3><span class="icon">⚙️</span>Alternative: Redirect Method</h3>
+            <p>If you prefer not to enable popups, the app will automatically use a redirect method that doesn't require popups. This will temporarily redirect you to Google and back.</p>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="javascript:window.close();" class="back-button">Return to App</a>
+        </div>
+
+        <p style="margin-top: 30px; font-size: 14px; color: #666; text-align: center;">
+            <strong>Why is this needed?</strong> Google Sign-In uses a secure popup window to authenticate you without storing your password on our servers.
+        </p>
+    </div>
+</body>
+</html>

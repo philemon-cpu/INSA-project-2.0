@@ -1,34 +1,60 @@
-import React, { useState } from "react";
-import Login from "./components/Login";
-import Signup from "./components/Signup";
-import Welcome from "./components/Welcome";
-import { signOut } from "firebase/auth";
-import { auth } from "./firebase";
+import React, { useState, useEffect } from "react";
+import GoogleAuth from "./components/GoogleAuth";
+import Dashboard from "./components/Dashboard";
+import { api } from "./api";
 
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
-  const [page, setPage] = useState("login");
+  const [loading, setLoading] = useState(true);
 
-  const openLogin = () => setPage("login");
-  const openSignup = () => setPage("signup");
+  useEffect(() => {
+    // Check if user is already authenticated on app load
+    const checkExistingAuth = async () => {
+      try {
+        if (api.isAuthenticated()) {
+          const user = await api.getCurrentUser();
+          setCurrentUser(user);
+        }
+      } catch (error) {
+        console.error("Auth check failed:", error);
+        api.logout();
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const logout = async () => {
-    try {
-      await signOut(auth);
-      setCurrentUser(null);
-    } catch (error) {
-      console.error("Logout failed", error);
-    }
+    checkExistingAuth();
+  }, []);
+
+  const handleAuthSuccess = (user) => {
+    setCurrentUser(user);
   };
 
-  if (currentUser) {
-    return <Welcome user={currentUser} logout={logout} />;
+  const handleLogout = () => {
+    setCurrentUser(null);
+  };
+
+  if (loading) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        backgroundColor: '#f5f5f5'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <h2>Loading...</h2>
+          <p>Checking authentication status...</p>
+        </div>
+      </div>
+    );
   }
 
-  return page === "signup" ? (
-    <Signup goLogin={openLogin} />
+  return currentUser ? (
+    <Dashboard user={currentUser} onLogout={handleLogout} />
   ) : (
-    <Login setUser={setCurrentUser} goSignup={openSignup} />
+    <GoogleAuth onAuthSuccess={handleAuthSuccess} onLogout={handleLogout} />
   );
 }
 
